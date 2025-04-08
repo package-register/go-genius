@@ -84,18 +84,18 @@ func (o *ImgOption) processDayInfo(weekDay int, dayInfo map[string]any, colorDat
 }
 
 // CreateTplWithLocal 从本地文件创建模板
-func (o *ImgOption) CreateTplWithLocal(imgTemplate string, cnameData map[int]map[string]any) (string, *gg.Context) {
+func (o *ImgOption) CreateTplWithLocal(imgTemplate string, cnameData map[int]map[string]any) *gg.Context {
 	img, _ := gg.LoadImage(imgTemplate)
 	context := gg.NewContextForImage(img)
 	return o.create(context, cnameData)
 }
 
 // CreateTplWithCtx 从上下文创建模板
-func (o *ImgOption) CreateTplWithCtx(ctx *gg.Context, cnameData map[int]map[string]any) (string, *gg.Context) {
+func (o *ImgOption) CreateTplWithCtx(ctx *gg.Context, cnameData map[int]map[string]any) *gg.Context {
 	return o.create(ctx, cnameData)
 }
 
-func (o *ImgOption) create(context *gg.Context, cnameData map[int]map[string]any) (string, *gg.Context) {
+func (o *ImgOption) create(context *gg.Context, cnameData map[int]map[string]any) *gg.Context {
 	// 颜色数据 和 组合数据
 	colorData := make(map[string]color.RGBA)
 	_ = context.LoadFontFace(o.FontPath, 28)
@@ -103,5 +103,5 @@ func (o *ImgOption) create(context *gg.Context, cnameData map[int]map[string]any
 	for weekDay, dayName := range cnameData {
 		o.processDayInfo(weekDay, dayName, colorData, context)
 	}
-	return "", context
+	return context
 }
