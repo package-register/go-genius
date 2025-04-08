@@ -83,14 +83,21 @@ func (o *ImgOption) processDayInfo(weekDay int, dayInfo map[string]any, colorDat
 	}
 }
 
-// Create 方法用于创建图片
-func (o *ImgOption) Create(imgTemplate string, cnameData map[int]map[string]any) (string, *gg.Context) {
-	// 颜色数据 和 组合数据
-	colorData := make(map[string]color.RGBA)
-
-	// 创建画板
+// CreateTplWithLocal 从本地文件创建模板
+func (o *ImgOption) CreateTplWithLocal(imgTemplate string, cnameData map[int]map[string]any) (string, *gg.Context) {
 	img, _ := gg.LoadImage(imgTemplate)
 	context := gg.NewContextForImage(img)
+	return o.create(context, cnameData)
+}
+
+// CreateTplWithCtx 从上下文创建模板
+func (o *ImgOption) CreateTplWithCtx(ctx *gg.Context, cnameData map[int]map[string]any) (string, *gg.Context) {
+	return o.create(ctx, cnameData)
+}
+
+func (o *ImgOption) create(context *gg.Context, cnameData map[int]map[string]any) (string, *gg.Context) {
+	// 颜色数据 和 组合数据
+	colorData := make(map[string]color.RGBA)
 	_ = context.LoadFontFace(o.FontPath, 28)
 
 	for weekDay, dayName := range cnameData {
