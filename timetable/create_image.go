@@ -6,8 +6,6 @@ import (
 	"regexp"
 	"time"
 
-	"slices"
-
 	"github.com/fogleman/gg"
 )
 
