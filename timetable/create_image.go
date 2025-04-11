@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"math/rand"
 	"regexp"
+	"time"
 
 	"slices"
 
@@ -40,8 +41,12 @@ var (
 
 // IsExistAndColor 方法用于检查课程是否存在于颜色数据中
 func (o *ImgOption) IsExistAndColor(colorData map[string]color.RGBA, lessonName string) color.RGBA {
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	if _, exists := colorData[lessonName]; !exists {
-		colorIndex := rand.Intn(len(colorList))
+		colorIndex := rng.Intn(len(colorList))
+		if colorIndex == 0 {
+			colorIndex = rng.Intn(len(colorList))
+		}
 		colorData[lessonName] = colorList[colorIndex]
 		colorList = slices.Delete(colorList, colorIndex, colorIndex+1)
 	}
