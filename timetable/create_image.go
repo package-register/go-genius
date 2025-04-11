@@ -44,11 +44,7 @@ func (o *ImgOption) IsExistAndColor(colorData map[string]color.RGBA, lessonName 
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	if _, exists := colorData[lessonName]; !exists {
 		colorIndex := rng.Intn(len(colorList))
-		if colorIndex == 0 {
-			colorIndex = rng.Intn(len(colorList))
-		}
 		colorData[lessonName] = colorList[colorIndex]
-		colorList = slices.Delete(colorList, colorIndex, colorIndex+1)
 	}
 	return colorData[lessonName]
 }
