@@ -6,10 +6,16 @@ import (
 	"github.com/fogleman/gg"
 )
 
-func (o *ImgOption) drawClassName() {
+type TemplateOption struct {
+	WeekTime   map[int]string
+	CreateTime string
+	Cname      string
+}
+
+func (o *ImgOption) drawClassName(cname string, createTime string) {
 	o.Image.SetRGB(0, 0, 0)
-	o.Image.DrawString("专升本软工 第 7 周", 870, 55)
-	o.Image.DrawString("2025-04-07 09:33:20", 870, 90)
+	o.Image.DrawString(cname, 870, 55)
+	o.Image.DrawString(createTime, 870, 90)
 }
 
 func (o *ImgOption) drawSelection() {
@@ -18,16 +24,18 @@ func (o *ImgOption) drawSelection() {
 	}
 }
 
-func (o *ImgOption) drawTime() {
-	timeData := map[int]string{
-		1: "08:00—08:45",
-		2: "08:55—09:40",
-		3: "10:10—10:55",
-		4: "11:05—11:50",
-		5: "14:30—15:15",
-		6: "15:25—16:10",
-		7: "16:20—17:05",
-		8: "17:15—18:00",
+func (o *ImgOption) drawTime(timeData map[int]string) {
+	if timeData == nil {
+		timeData = map[int]string{
+			1: "08:00—08:45",
+			2: "08:55—09:40",
+			3: "10:10—10:55",
+			4: "11:05—11:50",
+			5: "14:30—15:15",
+			6: "15:25—16:10",
+			7: "16:20—17:05",
+			8: "17:15—18:00",
+		}
 	}
 	for i := range 8 {
 		o.Image.DrawString(timeData[i+1], 45, float64(200+125*i))
@@ -45,8 +53,6 @@ func (o *ImgOption) drawWeek() {
 }
 
 func (o *ImgOption) drawCanvas() {
-	o.Image.SetRGB(1, 1, 1)       // 设置背景颜色为白色，不包含透明度
-	o.Image.Clear()               // 清除背景
 	o.Image.SetRGB(0.5, 0.5, 0.5) // 调至浅灰色
 	// 格子线
 	{
@@ -67,15 +73,15 @@ func (o *ImgOption) drawCanvas() {
 }
 
 // CreateBasePhoto 创建基础模板图片
-func (o *ImgOption) CreateBasePhoto() *gg.Context {
+func (o *ImgOption) CreateBasePhoto(opt TemplateOption) *gg.Context {
 	// 创建画布
 	o.drawCanvas()
 	// 顶部班级
-	o.drawClassName()
+	o.drawClassName(opt.Cname, opt.CreateTime)
 	// 节次
 	o.drawSelection()
 	// 时间
-	o.drawTime()
+	o.drawTime(opt.WeekTime)
 	// 星期
 	o.drawWeek()
 	return o.Image

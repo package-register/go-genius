@@ -78,11 +78,11 @@ func (dp *DataParser) ProcessData(filePath string) (map[int]map[string]any, erro
 
 // ProcessBytes 处理字节流中的课程数据
 func (dp *DataParser) ProcessBytes(data []byte) (map[int]map[string]any, error) {
-	unmarshaledData, err := dp.ReadBytes(data)
+	unmarshalledData, err := dp.ReadBytes(data)
 	if err != nil {
 		return nil, err
 	}
-	return dp.processGenericData(unmarshaledData)
+	return dp.processGenericData(unmarshalledData)
 }
 
 // processGenericData 处理通用的数据 (无论是从文件还是字节流读取的)
