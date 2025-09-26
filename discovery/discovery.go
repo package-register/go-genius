@@ -1,4 +1,4 @@
- package discovery
+package discovery
 
 import (
 	"context"
@@ -72,13 +72,13 @@ type Discovery struct {
 	handlers      map[string]CommandHandler
 	devices       map[string]*Device
 	pending       map[string]chan MessageEnvelope
-	multicastConn *net.UDPConn
+	multicastConns []*net.UDPConn // Changed to slice for multiple connections
 	unicastConn   *net.UDPConn
 }
 
 // NewDiscovery 创建一个新的 Discovery 实例
 func NewDiscovery(name, ver string, logger Logger) *Discovery {
-	ip, _ := getLocalIP()
+	ip, _ := getLocalIP() // This will need to be revisited for multi-NIC
 	port, _ := getAvailablePort()
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Discovery{
@@ -109,11 +109,27 @@ func (d *Discovery) Start() error {
 	if err != nil {
 		return fmt.Errorf("resolve multicast address failed: %w", err)
 	}
-	mc, err := net.ListenMulticastUDP("udp", nil, maddr)
+
+	// Get all active interfaces with IPv4 addresses
+	interfaces, err := getActiveInterfaces()
 	if err != nil {
-		return fmt.Errorf("listen multicast UDP failed: %w", err)
+		return fmt.Errorf("get active interfaces failed: %w", err)
 	}
-	d.multicastConn = mc
+
+	// Create a multicast connection for each active interface
+	for _, iface := range interfaces {
+		mc, err := net.ListenMulticastUDP("udp", &iface, maddr)
+		if err != nil {
+			d.logger.Error("listen multicast UDP on interface %s failed: %v", iface.Name, err)
+			continue // Try next interface
+		}
+		d.multicastConns = append(d.multicastConns, mc)
+		go d.listenMulticast(mc) // Start a listener for each connection
+	}
+
+	if len(d.multicastConns) == 0 {
+		return fmt.Errorf("no active multicast interfaces found to listen on")
+	}
 
 	uc, err := net.ListenUDP("udp", nil)
 	if err != nil {
@@ -121,7 +137,6 @@ func (d *Discovery) Start() error {
 	}
 	d.unicastConn = uc
 
-	go d.listenMulticast()
 	go d.sendMulticastAnnounce()
 	go d.cleanupDevices()
 
@@ -132,8 +147,8 @@ func (d *Discovery) Start() error {
 // Stop 停止设备发现服务
 func (d *Discovery) Stop() {
 	d.cancel()
-	if d.multicastConn != nil {
-		_ = d.multicastConn.Close()
+	for _, conn := range d.multicastConns {
+		_ = conn.Close()
 	}
 	if d.unicastConn != nil {
 		_ = d.unicastConn.Close()
@@ -199,7 +214,7 @@ func (d *Discovery) GetDevices() []*Device {
 	return devices
 }
 
-func (d *Discovery) listenMulticast() {
+func (d *Discovery) listenMulticast(conn *net.UDPConn) {
 	buf := make([]byte, 2048)
 	for {
 		select {
@@ -207,8 +222,8 @@ func (d *Discovery) listenMulticast() {
 			return
 		default:
 			// 设置读取超时，防止阻塞
-			_ = d.multicastConn.SetReadDeadline(time.Now().Add(2 * time.Second))
-			n, src, err := d.multicastConn.ReadFromUDP(buf)
+			_ = conn.SetReadDeadline(time.Now().Add(2 * time.Second))
+			n, src, err := conn.ReadFromUDP(buf)
 			if err != nil {
 				// 忽略超时错误
 				if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
@@ -315,15 +330,23 @@ func (d *Discovery) cleanupDevices() {
 }
 
 func (d *Discovery) sendMulticast(data []byte) error {
-	conn, err := net.DialTimeout("udp", multicastAddr, 2*time.Second)
+	maddr, err := net.ResolveUDPAddr("udp", multicastAddr)
 	if err != nil {
-		return fmt.Errorf("dial multicast address failed: %w", err)
+		return fmt.Errorf("resolve multicast address failed: %w", err)
 	}
-	defer func() {
-		_ = conn.Close()
-	}()
-	_, err = conn.Write(data)
-	return err
+
+	var lastErr error
+	// Send on all available multicast connections
+	for _, conn := range d.multicastConns {
+		// Set a write deadline for each send operation
+		_ = conn.SetWriteDeadline(time.Now().Add(2 * time.Second))
+		_, err := conn.WriteToUDP(data, maddr)
+		if err != nil {
+			lastErr = fmt.Errorf("send multicast on %s failed: %w", conn.LocalAddr().String(), err)
+			d.logger.Error(lastErr.Error())
+		}
+	}
+	return lastErr // Return the last error encountered, or nil if all succeeded
 }
 
 func (d *Discovery) sendUnicast(addr string, data []byte) error {
@@ -334,6 +357,38 @@ func (d *Discovery) sendUnicast(addr string, data []byte) error {
 	_ = d.unicastConn.SetWriteDeadline(time.Now().Add(2 * time.Second))
 	_, err = d.unicastConn.WriteToUDP(data, udpAddr)
 	return err
+}
+
+// getActiveInterfaces returns a list of active network interfaces with at least one IPv4 address.
+func getActiveInterfaces() ([]net.Interface, error) {
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return nil, fmt.Errorf("get network interfaces failed: %w", err)
+	}
+
+	var activeInterfaces []net.Interface
+	for _, iface := range interfaces {
+		// Check if the interface is up, not a loopback, and supports multicast
+		if iface.Flags&net.FlagUp != 0 &&
+			iface.Flags&net.FlagLoopback == 0 &&
+			iface.Flags&net.FlagMulticast != 0 {
+
+			addrs, err := iface.Addrs()
+			if err != nil {
+				continue
+			}
+
+			for _, addr := range addrs {
+				if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+					if ipnet.IP.To4() != nil { // Only consider IPv4 addresses
+						activeInterfaces = append(activeInterfaces, iface)
+						break // Found an IPv4 address, move to next interface
+					}
+				}
+			}
+		}
+	}
+	return activeInterfaces, nil
 }
 
 func getLocalIP() (string, error) {
