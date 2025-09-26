@@ -15,7 +15,7 @@ import (
 const (
 	multicastAddr = "239.0.0.1:9999"
 	announceIntv  = 15 * time.Second
-	timeout       = 5 * time.Second
+	timeout       = 25 * time.Second // Increased timeout to be greater than announceIntv
 )
 
 // Logger 接口定义了日志方法

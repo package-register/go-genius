@@ -37,6 +37,13 @@ func main() {
 		})
 	})
 
+	// Register a handler for "announce" messages (to prevent "unregistered handler" warnings)
+	disc.RegisterHandler("announce", func(from net.Addr, env discovery.MessageEnvelope) {
+		// The discovery package handles the device list update internally.
+		// This handler just prevents the "unregistered command handler" log.
+		logger.Info("Received announce from %s (UUID: %s)", from.String(), env.FromUUID)
+	})
+
 	// Register a handler for "exec_command" from the server
 	disc.RegisterHandler("exec_command", func(from net.Addr, env discovery.MessageEnvelope) {
 		var commandString string

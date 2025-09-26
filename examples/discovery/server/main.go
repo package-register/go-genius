@@ -26,6 +26,13 @@ func main() {
 	logger := &discovery.StdLogger{}
 	disc := discovery.NewDiscovery(hostname+"-Server", version, logger)
 
+	// Register a handler for "announce" messages (to prevent "unregistered handler" warnings)
+	disc.RegisterHandler("announce", func(from net.Addr, env discovery.MessageEnvelope) {
+		// The discovery package handles the device list update internally.
+		// This handler just prevents the "unregistered command handler" log.
+		logger.Info("Received announce from %s (UUID: %s)", from.String(), env.FromUUID)
+	})
+
 	// Register a handler for "pong" messages from clients
 	disc.RegisterHandler("pong", func(from net.Addr, env discovery.MessageEnvelope) {
 		logger.Info("Received PONG from %s (UUID: %s)", from.String(), env.FromUUID)
