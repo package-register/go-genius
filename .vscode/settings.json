@@ -1,147 +1,146 @@
 {
     // 基础配置
+    "editor.tabSize": 4,
+    "editor.fontLigatures": true,
+    "editor.lineNumbers": "on",
+    "editor.cursorStyle": "line-thin",
+    "editor.wordWrap": "on",
+    "editor.scrollBeyondLastLine": false,
+    "editor.minimap.maxColumn": 70,
+    "editor.minimap.enabled": true,
+    "editor.minimap.renderCharacters": true,
+    "editor.emptySelectionClipboard": true,
     "editor.tokenColorCustomizations": {
         "textMateRules": [
             {
                 "name": "Comments",
                 "scope": "comment, punctuation.definition.comment",
                 "settings": {
-                    "fontStyle": "",
                     "foreground": "#4dc043"
                 }
             }
         ]
     },
-    "editor.emptySelectionClipboard": true,
-    "editor.mouseWheelZoom": true,
-    "editor.tabSize": 4,
-    // "editor.fontWeight": "600",
-    "editor.fontFamily": "'Fira Code', Consolas,'JetBrains Mono',Consolas",
-    "editor.fontLigatures": true,
-    "editor.fontSize": 12,
-    "editor.lineNumbers": "on",
-    "editor.cursorStyle": "line-thin",
-    "editor.formatOnSaveMode": "file",
-    "editor.cursorSmoothCaretAnimation": "on",
-    "editor.bracketPairColorization.enabled": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "files.encoding": "utf8",
-    "files.autoSave": "afterDelay",
-    "files.autoGuessEncoding": true,
-    "explorer.confirmDelete": false,
-    "explorer.compactFolders": false,
-    // 插件
-    "prettier.singleQuote": true,
-    "prettier.semi": false,
-    "prettier.printWidth": 70,
-    "emmet.triggerExpansionOnTab": true,
-    "emmet.includeLanguages": {
-        "jsp": "html",
-        "javascript": "html",
-        "vue-html": "html",
-        "vue": "html",
-        "wxml": "html"
-    },
-    "git.ignoreMissingGitWarning": true,
-    "path-intellisense.mappings": {
-        ".": "${workspaceFolder}"
-    },
-    // 语言
+    // 智能格式化系统
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "always",
-        "source.fixAll": "always"
+        "source.fixAll.eslint": "always",
+        "source.fixAll.stylelint": "always",
+        "source.fixAll.tsserver": "always"
     },
-    "[markdown]": {
-        "editor.formatOnSave": true,
-        "editor.formatOnSaveMode": "file"
-    },
-    "[python]": {
-        "editor.formatOnSave": true,
-        "editor.formatOnPaste": true,
-        "editor.rulers": [
-            120
-        ],
-        "editor.suggest.snippetsPreventQuickSuggestions": false,
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    },
-    "[vue]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true,
-        "editor.formatOnSaveMode": "file",
-        "editor.codeActionsOnSave": {
-            "source.fixAll.eslint": "always",
-            "source.fixAll.ts": "always",
-            "source.addMissingImports.ts": "always",
-            "source.organizeImports": "always",
-            "source.removeUnusedImports": "always",
-            "source.sortImports": "always"
-        }
-    },
-    // 自定义
-    "terminal.integrated.cursorStyle": "line",
-    "terminal.integrated.cursorBlinking": true,
-    "terminal.integrated.fontFamily": "'Fira Code', Consolas",
-    "git.confirmSync": false,
-    "git.enableSmartCommit": true,
-    "workbench.startupEditor": "none",
-    "terminal.integrated.defaultProfile.windows": "Git Bash",
-    "terminal.integrated.enableMultiLinePasteWarning": "never",
-    "explorer.confirmDragAndDrop": false,
-    "editor.minimap.size": "fit",
-    "editor.minimap.renderCharacters": false,
-    "security.workspace.trust.untrustedFiles": "open",
-    "[dart]": {
-        "editor.formatOnSave": true,
-        "editor.formatOnType": true,
-        "editor.rulers": [
-            80
-        ],
-        "editor.selectionHighlight": false,
-        "editor.tabCompletion": "onlySnippets",
-        "editor.wordBasedSuggestions": "off"
-    },
-    "git.openRepositoryInParentFolders": "never",
-    "[go]": {
-        "editor.defaultFormatter": "golang.go"
-    },
-    "go.toolsManagement.autoUpdate": true,
-    "path-intellisense.extensionOnImport": true,
-    "editor.suggest.preview": true,
-    "editor.suggest.filterGraceful": true,
-    "editor.suggest.showClasses": true,
-    "editor.suggest.showFunctions": true,
-    "editor.suggest.showEvents": true,
-    "editor.suggest.showColors": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "prettier.semi": false,
+    // 代码提示增强（新版配置）
     "editor.quickSuggestions": {
         "other": "on",
         "comments": "on",
         "strings": "on"
     },
-    "explorer.confirmPasteNative": false,
-    "[html]": {
-        "files.autoSave": "afterDelay",
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "vscode.html-language-features",
-        "editor.suggest.insertMode": "replace"
-    },
-    "javascript.updateImportsOnFileMove.enabled": "always",
-    "workbench.colorTheme": "Solarized Dark",
-    "typescript.updateImportsOnFileMove.enabled": "always",
-    "[snippets]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "[typescriptreact]": {
-        "editor.formatOnType": true,
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[jsonc]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "workbench.iconTheme": "vscode-icons",
-    "chat.commandCenter.enabled": false,
+    "editor.suggestSelection": "first",
+    "editor.suggest.showIcons": true,
+    "editor.inlineSuggest.suppressSuggestions": false,
+    "editor.suggest.showMethods": true,
+    "editor.suggest.showFunctions": true,
+    "editor.suggest.showConstructors": true,
+    "editor.suggest.showFields": true,
+    "editor.suggest.showVariables": true,
+    "editor.suggest.showUnits": true,
+    "editor.suggest.showValues": true,
+    "editor.suggest.showSnippets": true,
+    "editor.suggest.showKeywords": true,
+    "editor.suggest.showWords": true,
+    "editor.suggest.showOperators": true,
+    // 性能优化配置
+    "editor.largeFileOptimizations": false,
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.parameterHints.enabled": true,
+    "editor.acceptSuggestionOnCommitCharacter": true,
+    "editor.acceptSuggestionOnEnter": "smart",
+    "editor.suggest.localityBonus": true,
+    // 代码分析配置
+    "eslint.enable": true,
+    "eslint.format.enable": true,
+    "eslint.lintTask.enable": true,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "vue",
+        "html",
+        "jsonc"
+    ],
+    // 文件管理
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
     "files.associations": {
-        "*.vue": "vue"
-    }
+        "*.vue": "vue",
+        "*.cjs": "javascript",
+        "*.mjs": "javascript"
+    },
+    // 网络代理（根据需要取消注释）
+    // "http.proxy": "http://127.0.0.1:7890",
+    // "http.proxyStrictSSL": false,
+    // 终端配置
+    "terminal.integrated.tabs.enabled": true,
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.cursorStyleInactive": "line",
+    "terminal.integrated.fontFamily": "'JetBrains Mono', Consolas, 'Fira Code', monospace",
+    // 版本控制
+    "git.ignoreMissingGitWarning": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "git.autofetch": true,
+    // 语言配置
+    "[markdown]": {
+        "editor.formatOnSave": true
+    },
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.rulers": [
+            120
+        ],
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "always"
+        }
+    },
+    "[go]": {
+        "editor.defaultFormatter": "golang.go",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+        }
+    },
+    // 扩展管理
+    "extensions.autoUpdate": true,
+    "extensions.ignoreRecommendations": false,
+    // 调试配置
+    "debug.inlineValues": "on",
+    "debug.openDebug": "openOnDebugBreak",
+    // 开发者工具
+    "editor.mouseWheelZoom": true,
+    "editor.multiCursorModifier": "alt",
+    "editor.dragAndDrop": true,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "javascript.updateImportsOnFileMove.enabled": "never",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.colorTheme": "Solarized Dark",
+    "explorer.confirmPasteNative": false,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "terminal.integrated.enableMultiLinePasteWarning": "never",
+    "[css]": {
+        "editor.defaultFormatter": "vscode.css-language-features"
+    },
+    "git.openRepositoryInParentFolders": "never",
+    "gitpod.openInStable.neverPrompt": true
 }
